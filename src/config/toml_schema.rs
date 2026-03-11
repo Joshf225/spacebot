@@ -113,7 +113,12 @@ pub(super) fn default_api_bind() -> String {
 
 pub(super) fn hosted_api_bind(bind: String) -> String {
     match std::env::var("SPACEBOT_DEPLOYMENT") {
-        Ok(deployment) if deployment.eq_ignore_ascii_case("hosted") => "[::]".into(),
+        Ok(deployment)
+            if deployment.eq_ignore_ascii_case("hosted")
+                || deployment.eq_ignore_ascii_case("docker") =>
+        {
+            "[::]".into()
+        }
         _ => bind,
     }
 }
