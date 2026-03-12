@@ -2568,7 +2568,10 @@ fn parse_openai_reasoning_fallback(message: &serde_json::Value) -> Option<String
 fn collect_openai_text_content(value: &serde_json::Value, text_parts: &mut Vec<String>) {
     match value {
         serde_json::Value::String(text) => {
-            if !text.trim().is_empty() {
+            // Use is_empty() instead of trim().is_empty() to preserve whitespace-only
+            // segments. Streaming providers (e.g. Kimi) sometimes send content chunks
+            // that are just spaces; dropping those causes missing spaces in output.
+            if !text.is_empty() {
                 text_parts.push(text.to_string());
             }
         }
@@ -2579,17 +2582,17 @@ fn collect_openai_text_content(value: &serde_json::Value, text_parts: &mut Vec<S
         }
         serde_json::Value::Object(map) => {
             if let Some(text) = map.get("text").and_then(serde_json::Value::as_str)
-                && !text.trim().is_empty()
+                && !text.is_empty()
             {
                 text_parts.push(text.to_string());
             }
             if let Some(summary) = map.get("summary").and_then(serde_json::Value::as_str)
-                && !summary.trim().is_empty()
+                && !summary.is_empty()
             {
                 text_parts.push(summary.to_string());
             }
             if let Some(refusal) = map.get("refusal").and_then(serde_json::Value::as_str)
-                && !refusal.trim().is_empty()
+                && !refusal.is_empty()
             {
                 text_parts.push(refusal.to_string());
             }
@@ -2663,7 +2666,7 @@ fn extract_text_content_from_responses_output_item(
             }
 
             if let Some(text) = map.get("text").and_then(serde_json::Value::as_str)
-                && !text.trim().is_empty()
+                && !text.is_empty()
             {
                 text_parts.push(text.to_string());
             }
