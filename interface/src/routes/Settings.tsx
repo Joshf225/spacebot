@@ -145,7 +145,7 @@ const PROVIDERS = [
 		description: "GLM coding models (glm-4.7, glm-5, glm-4.5-air)",
 		placeholder: "...",
 		envVar: "ZAI_CODING_PLAN_API_KEY",
-		defaultModel: "glm-5",
+		defaultModel: "zai-coding-plan/glm-5",
 	},
 	{
 		id: "zhipu",
