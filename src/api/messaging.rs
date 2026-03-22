@@ -1547,6 +1547,16 @@ pub(super) async fn toggle_platform(
             if let Err(error) = manager.remove_adapter(&runtime_key).await {
                 tracing::warn!(%error, adapter = %runtime_key, "failed to shut down default adapter on toggle");
             }
+            // Clear cached Signal permissions so the allow-list is no longer in memory
+            let perms_guard = state.signal_permissions.read().await;
+            if perms_guard.is_some() {
+                drop(perms_guard);
+                state
+                    .set_signal_permissions(std::sync::Arc::new(arc_swap::ArcSwap::from_pointee(
+                        crate::config::SignalPermissions::default(),
+                    )))
+                    .await;
+            }
         } else if let Err(error) = manager.remove_platform_adapters(platform).await {
             tracing::warn!(%error, platform = %platform, "failed to shut down adapters on toggle");
         }
@@ -2190,6 +2200,20 @@ pub(super) async fn delete_messaging_instance(
         && let Err(error) = manager.remove_adapter(&runtime_key).await
     {
         tracing::warn!(%error, adapter = %runtime_key, "failed to shut down adapter during instance delete");
+    }
+    drop(manager_guard);
+
+    // Clear cached Signal permissions when deleting the default Signal adapter
+    if platform == "signal" && adapter_name.is_none() {
+        let perms_guard = state.signal_permissions.read().await;
+        if perms_guard.is_some() {
+            drop(perms_guard);
+            state
+                .set_signal_permissions(std::sync::Arc::new(arc_swap::ArcSwap::from_pointee(
+                    crate::config::SignalPermissions::default(),
+                )))
+                .await;
+        }
     }
 
     // Clean up twitch token file if applicable
