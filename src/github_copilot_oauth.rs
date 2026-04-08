@@ -13,8 +13,13 @@ use serde::{Deserialize, Serialize};
 
 use std::path::{Path, PathBuf};
 
-/// GitHub OAuth App client ID used by OpenCode/Copilot CLI tools.
-const CLIENT_ID: &str = "Ov23li8tweQw6odWQebz";
+/// GitHub OAuth App client ID for the VS Code GitHub Copilot extension.
+///
+/// This is the client ID used by the official VS Code Copilot extension and is
+/// whitelisted by GitHub for `copilot_internal/v2/token` exchange. Third-party
+/// Copilot integrations (neovim/copilot.vim, etc.) use the same client ID since
+/// GitHub has not published a public registration path for new Copilot OAuth apps.
+const CLIENT_ID: &str = "01ab8ac9400c4e429b23";
 
 /// GitHub device code request endpoint.
 const DEVICE_CODE_URL: &str = "https://github.com/login/device/code";
@@ -25,7 +30,7 @@ const TOKEN_URL: &str = "https://github.com/login/oauth/access_token";
 /// Default verification URL shown to the user.
 const DEFAULT_VERIFICATION_URL: &str = "https://github.com/login/device";
 
-/// OAuth scope requested — read:user is sufficient for Copilot token exchange.
+/// OAuth scope requested for Copilot token exchange.
 const SCOPE: &str = "read:user";
 
 /// Stored GitHub OAuth credentials from the device code flow.
