@@ -4,8 +4,10 @@ import {usePortal, getPortalSessionId} from "@/hooks/usePortal";
 import {isOpenCodeWorker, type ActiveWorker} from "@/hooks/useChannelLiveState";
 import {useLiveContext} from "@/hooks/useLiveContext";
 import {Markdown} from "@/components/Markdown";
+import {AgentHeaderContent} from "@/components/AgentHeaderContent";
 import {ConversationSettingsPanel} from "@/components/ConversationSettingsPanel";
 import {ConversationsSidebar} from "@/components/ConversationsSidebar";
+import {useSetTopBar} from "@/components/TopBar";
 import {Button} from "@/ui/Button";
 import {Popover, PopoverTrigger, PopoverContent} from "@/ui/Popover";
 import {api, type ConversationDefaultsResponse, type ConversationSettings} from "@/api/client";
@@ -248,6 +250,14 @@ export function WebChatPanel({agentId}: WebChatPanelProps) {
 	const isTyping = liveState?.isTyping ?? false;
 	const activeWorkers = Object.values(liveState?.workers ?? {});
 	const hasActiveWorkers = activeWorkers.length > 0;
+
+	useSetTopBar(
+		<AgentHeaderContent
+			agentId={agentId}
+			displayName={agentDisplayName}
+			contextUsage={liveState?.contextUsage ?? null}
+		/>,
+	);
 
 	// Mutations
 	const createConversationMutation = useMutation({

@@ -8,6 +8,7 @@ import {
 import {useQuery} from "@tanstack/react-query";
 import {api, BASE_PATH} from "@/api/client";
 import {ConnectionBanner} from "@/components/ConnectionBanner";
+import {AgentHeaderContent} from "@/components/AgentHeaderContent";
 import {TopBar, TopBarProvider, useSetTopBar} from "@/components/TopBar";
 import {Sidebar} from "@/components/Sidebar";
 import {Overview} from "@/routes/Overview";
@@ -30,7 +31,6 @@ import {Orchestrate} from "@/routes/Orchestrate";
 import {useLiveContext} from "@/hooks/useLiveContext";
 import {getPortalSessionId} from "@/hooks/usePortal";
 import {AgentTabs} from "@/components/AgentTabs";
-import {formatTokens, getTokenUsageColor} from "@/utils/tokens";
 
 // ── Root layout ──────────────────────────────────────────────────────────
 
@@ -77,26 +77,11 @@ function AgentTopBar({agentId}: {agentId: string}) {
 	const contextUsage = liveStates[relevantChannelId]?.contextUsage ?? null;
 
 	useSetTopBar(
-		<div className="flex h-full w-full items-center gap-4 px-6">
-			<h1 className="min-w-0 flex-1 truncate font-plex text-sm font-medium text-ink">
-					{displayName ? (
-						<>
-							{displayName}
-							<span className="ml-2 text-ink-faint">{agentId}</span>
-						</>
-					) : (
-						agentId
-					)}
-			</h1>
-			{contextUsage && contextUsage.estimatedTokens > 0 && (
-				<div
-					className={`shrink-0 text-tiny font-mono ${getTokenUsageColor(contextUsage.usageRatio)}`}
-					title={`${contextUsage.estimatedTokens.toLocaleString()} / ${contextUsage.contextWindow.toLocaleString()} tokens (${(contextUsage.usageRatio * 100).toFixed(1)}%)`}
-				>
-					{formatTokens(contextUsage.estimatedTokens)} / {formatTokens(contextUsage.contextWindow)}
-				</div>
-			)}
-		</div>,
+		<AgentHeaderContent
+			agentId={agentId}
+			displayName={displayName}
+			contextUsage={contextUsage}
+		/>,
 	);
 
 	return <AgentTabs agentId={agentId} />;
